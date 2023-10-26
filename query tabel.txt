@@ -1,0 +1,64 @@
+-- membuat tabel lampiran 1
+CREATE TABLE IF NOT EXISTS public.lampiran_1
+(
+    "No" integer,
+    "Product Name" character varying(255) COLLATE pg_catalog."default",
+    qty integer,
+    unit character varying(50) COLLATE pg_catalog."default",
+    "Store Destination" character varying(255) COLLATE pg_catalog."default",
+    "Store Address" character varying(255) COLLATE pg_catalog."default",
+    operator character varying(255) COLLATE pg_catalog."default",
+    "Shipping Vehicle" character varying(255) COLLATE pg_catalog."default",
+    "No Polisi" character varying(20) COLLATE pg_catalog."default",
+    "Shipping Driver" character varying(255) COLLATE pg_catalog."default",
+    "Shipping co-driver" character varying(255) COLLATE pg_catalog."default",
+    "Sending Time" timestamp without time zone,
+    "Delivered Time" timestamp without time zone,
+    "Received By" character varying(255) COLLATE pg_catalog."default"
+)
+-- membuat tabel data product
+CREATE TABLE IF NOT EXISTS public.dataproducts
+(
+    no integer,
+    name character varying(255) COLLATE pg_catalog."default"
+)
+
+-- melakukan normalisasi
+
+-- membuat tabel store
+create table  store as
+select "No" as "id", "Store Destination" as StoreName, 
+    "Store Address" as address
+from lampiran_1 ;
+-- membuat tabel products
+create table  products as
+select "No" as id, "Product Name" as ProductName,
+    qty, unit
+from lampiran_1 ;
+-- membuat tabel shipments
+create table  shipments  as
+select "No" as ShipmentID, "No" as ProductID, "Store Destination" as StoreName,
+        Operator, "Shipping Vehicle" as ShippingVehicle, "No Polisi" as NoPolisi,
+        "Shipping Driver" as Driver, "Shipping co-driver" as CoDriver,
+        "Sending Time" as  SendingTime, "Delivered Time" as DeliveredTime,
+        "Received By" as ReceivedBy
+from lampiran_1 ;
+--  2 driver dengan pengiriman terbanyak bulan Mei 2023
+SELECT driver, COUNT(shipmentid) AS TotalShipments
+FROM shipments
+WHERE EXTRACT(MONTH FROM sendingtime) = 5 AND EXTRACT(YEAR FROM sendingtime) = 2023
+GROUP BY driver
+ORDER BY TotalShipments DESC
+LIMIT 2;
+-- 10 barang paling sering dikirim dibulan Mei 2023
+SELECT p.productname, COUNT(s.productid) AS TotalShipments
+FROM shipments s
+INNER JOIN products p ON s.productid = p.id
+WHERE EXTRACT(MONTH FROM sendingtime) = 5 AND EXTRACT(YEAR FROM sendingtime) = 2023
+GROUP BY p.productname
+ORDER BY TotalShipments DESC
+LIMIT 10;
+-- Menampilkan semua pengiriman yang belum selesai
+SELECT *
+FROM lampiran_1
+WHERE  "Delivered Time" IS NULL;

@@ -1,0 +1,35 @@
+-- prosedur shipment
+CREATE OR REPLACE PROCEDURE CreateNewShipment(
+    IN shipmentid integer,
+    IN productid INT,
+    IN storename VARCHAR(255),
+    IN operator VARCHAR(255),
+    IN shippingvehicle VARCHAR(255),
+    IN nopolisi VARCHAR(50),
+    IN driver VARCHAR(255),
+    IN codriver VARCHAR(255),
+    IN sendingtime TIMESTAMP,
+    IN deliveredtime TIMESTAMP,
+    IN receivedby VARCHAR(255)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO shipments (shipmentid, productid,storename, operator, shippingvehicle, nopolisi, driver, codriver, sendingtime,deliveredtime, receivedby)
+    VALUES (shipmentid, productid,storename, operator, shippingvehicle, nopolisi, driver, codriver, sendingtime,deliveredtime, receivedby);
+END;
+$$;
+-- add product
+CREATE OR REPLACE PROCEDURE AddProduct(
+    IN id INT,
+    IN productname INT,
+    IN qty INT,
+    IN unit VARCHAR(50)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO products (id, productname, qty, unit)
+    VALUES (id, productname, qty, unit);
+END;
+$$;
